@@ -5,11 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class help2 extends Model
+class sessions extends Model
 {
     use HasFactory;
-    public function mansessions()
+    public function products()
     {
-        return $this->belongsTo('App\Models\sessions');
+        return $this->hasMany('App\Models\help2');
     }
 }

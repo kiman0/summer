@@ -153,7 +153,7 @@ class MainController extends Controller
                             $t1->book_author = $comma_separated2;
                             $t1->book_price = (int)($res3[1][0]);
                             $t1->category = $post->category_name;
-                            $t1->data_img = "<img src='" .$res6[1][0]. "'></img>";
+                            $t1->data_img = $res6[1][0];
                             $t1->save();
                         }
 

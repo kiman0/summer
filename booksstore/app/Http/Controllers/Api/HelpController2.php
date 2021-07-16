@@ -3,14 +3,12 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\HelpResource;
-use App\Http\Resources\HelpResource3;
+use App\Http\Resources\HelpResource2;
 use Illuminate\Http\Request;
-use App\Models\categories;
-use App\Models\books;
+use App\Models\sessions;
 
 
-class HelpController extends Controller
+class HelpController2 extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -19,8 +17,7 @@ class HelpController extends Controller
      */
     public function index()
     {
-      //  return books::all();
-        return HelpResource::collection(books::all());
+        return HelpResource2::collection(sessions::all());
     }
 
     /**
@@ -31,7 +28,7 @@ class HelpController extends Controller
      */
     public function store(Request $request)
     {
-        //
+
     }
 
     /**
@@ -42,7 +39,7 @@ class HelpController extends Controller
      */
     public function show($id)
     {
-        return new HelpResource(books::findorFail($id));
+        return new HelpResource2(sessions::with('products')->findorFail($id));
     }
 
     /**
@@ -66,12 +63,5 @@ class HelpController extends Controller
     public function destroy($id)
     {
         //
-    }
-
-    public function showCat($id)
-    {
-        //return categories::all();
-        //return new HelpResource3(categories::with('id')->findorFail($id));
-        return new HelpResource3(categories::with('manbooks')->findorFail($id));
     }
 }
