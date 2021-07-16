@@ -14,8 +14,8 @@ class CreateHelp2sTable extends Migration
     public function up()
     {
         Schema::create('help2s', function (Blueprint $table) {
-            $table->foreignId('session_id');
-            $table->foreign('session_id')->references('user_id')->on('sessions')->onDelete('cascade');
+            $table->foreignId('sessions_id');
+            $table->foreign('sessions_id')->references('user_id')->on('sessions')->onDelete('cascade');
 
             $table->integer('bookss_id')->nullable();
             $table->foreign('bookss_id')->references('id')->on('books')->onDelete('cascade');
