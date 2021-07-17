@@ -15,8 +15,9 @@ class HelpResource3 extends JsonResource
     public function toArray($request)
     {
         return [
-            //'user_id'=>$this->id,
-            'manbooks'=>CatResource::collection($this->manbooks),
+            //'id'=>$this->id,
+            //'manbooks'=>CatResource::collection($this->manbooks),
+            'mancategories'=>$this->mancategories,
         ];
     }
 }

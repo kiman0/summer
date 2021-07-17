@@ -70,8 +70,8 @@ class HelpController extends Controller
 
     public function showCat($id)
     {
-        //return categories::all();
+      //  return books::with('id')->find($id);
         //return new HelpResource3(categories::with('id')->findorFail($id));
-        return new HelpResource3(categories::with('manbooks')->findorFail($id));
+        //return new HelpResource3(categories::with('manbooks')->findorFail($id));
     }
 }

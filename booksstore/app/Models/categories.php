@@ -12,6 +12,6 @@ class categories extends Model
     Protected $primaryKey = "id";
     public function manbooks()
     {
-        return $this->hasMany('App\Models\books');
+        return $this->hasMany(books::class);
     }
 }

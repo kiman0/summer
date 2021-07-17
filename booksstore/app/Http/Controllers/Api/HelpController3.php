@@ -3,13 +3,12 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\HelpResource2;
 use Illuminate\Http\Request;
-use App\Models\sessions;
-use App\Models\help2;
+use App\Http\Resources\HelpResource3;
+use App\Models\books;
+use App\Models\categories;
 
-
-class HelpController2 extends Controller
+class HelpController3 extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -18,7 +17,7 @@ class HelpController2 extends Controller
      */
     public function index()
     {
-        return HelpResource2::collection(sessions::all());
+        return HelpResource3::collection(categories::all());
     }
 
     /**
@@ -29,14 +28,7 @@ class HelpController2 extends Controller
      */
     public function store(Request $request)
     {
-        $created_desk=sessions::create($request->all());
-        //$created_desk2=help2::create($request->all());
-        $created_desk2 = help2::create([
-            'bookss_id' => $request['bookss_id'],   // $request->title also works?
-            'bookss_count' => $request['bookss_count'], // $request->body also works?
-            'sessions_id' => $request['sessions_id'] , // there might be a better solution, but this works 100%
-        ]);
-        return new HelpResource2($created_desk);
+        //
     }
 
     /**
@@ -45,9 +37,9 @@ class HelpController2 extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($request)
     {
-        return new HelpResource2(sessions::with('products')->findorFail($id));
+        return new HelpResource3(books::with('mancategories')->findorFail($request));
     }
 
     /**
