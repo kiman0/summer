@@ -14,11 +14,11 @@ class CreateHelp2sTable extends Migration
     public function up()
     {
         Schema::create('help2s', function (Blueprint $table) {
-            $table->foreignId('sessions_id');
-            $table->foreign('sessions_id')->references('user_id')->on('sessions')->onDelete('cascade');
+            $table->foreignId('sessions_id')->nullable()->unsigned();
+            $table->foreign('sessions_id')->references('user_id')->on('sessions');
 
             $table->integer('bookss_id')->nullable();
-            $table->foreign('bookss_id')->references('id')->on('books')->onDelete('cascade');
+            $table->foreign('bookss_id')->references('id')->on('books');
 
             $table->integer('bookss_count')->nullable();
         });

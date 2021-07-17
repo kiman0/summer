@@ -17,9 +17,9 @@ class CreateInterm1sTable extends Migration
             $table->integer('ord_id');
             $table->integer('boo_id');
 
-            $table->foreign('ord_id')->references('order_id')->on('orders')->onDelete('cascade');
+            $table->foreign('ord_id')->references('order_id')->on('orders');
 
-            $table->foreign('boo_id')->references('id')->on('books')->onDelete('cascade');
+            $table->foreign('boo_id')->references('id')->on('books');
 
             $table->decimal('quantity',10,4);
         });

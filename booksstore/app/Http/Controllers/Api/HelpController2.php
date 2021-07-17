@@ -34,7 +34,8 @@ class HelpController2 extends Controller
         $created_desk2 = help2::create([
             'bookss_id' => $request['bookss_id'],   // $request->title also works?
             'bookss_count' => $request['bookss_count'], // $request->body also works?
-            'sessions_id' => $request['sessions_id'] , // there might be a better solution, but this works 100%
+            'sessions_id' =>  sessions::where('session_id')->find('session_id'), // there might be a better solution, but this works 100%
+
         ]);
         return new HelpResource2($created_desk);
     }
