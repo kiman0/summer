@@ -10,6 +10,7 @@ class books extends Model
     use HasFactory;
     public $timestamps=false;
     public $categories_id=false;
+    //protected $fillable = ['id'];
     Protected $primaryKey = "id";
     public function mancategories()
     {
