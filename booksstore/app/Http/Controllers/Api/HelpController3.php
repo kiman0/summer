@@ -9,7 +9,7 @@ use App\Models\books;
 use App\Models\categories;
 
 class HelpController3 extends Controller
-{
+{/** Вспомогательный контроллер (не используется) :( */
     /**
      * Display a listing of the resource.
      *

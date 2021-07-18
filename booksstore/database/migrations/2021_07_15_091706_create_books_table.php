@@ -6,17 +6,14 @@ use Illuminate\Support\Facades\Schema;
 
 class CreateBooksTable extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
+    /** Таблица КНИГ */
+
     public function up()
     {
+
         Schema::create('books', function (Blueprint $table) {
             $table->integer('id')->unique();;
             $table->primary('id');;
-
             $table->string('book_name');
             $table->string('book_author');
             $table->decimal('book_price',10,4);

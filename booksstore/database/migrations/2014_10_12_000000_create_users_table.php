@@ -6,10 +6,8 @@ use Illuminate\Support\Facades\Schema;
 
 class CreateUsersTable extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
+    /** Эта таблица была создана автоматически
+     * не удаляли - на всякий случай
      */
     public function up()
     {

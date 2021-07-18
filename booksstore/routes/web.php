@@ -14,9 +14,10 @@ use App\Http\Controllers\MainController;
 |
 */
 
-
+/**  !!!!!!!!!!!!Роуты прописаны в файле api.php!!!!!!!!!
 Route::get('/about', [MainController::class, 'parse']);
 
 Route::get('/books/{id}', function () {
     return 'ID';
 });
+*/

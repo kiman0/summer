@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use \App\Http\Controllers\Api\HelpController;
 use \App\Http\Controllers\Api\HelpController2;
 use \App\Http\Controllers\Api\HelpController3;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -19,19 +20,30 @@ use \App\Http\Controllers\Api\HelpController3;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
 /**
-Route::get('api/products',[HelpController::class, 'index'] );
-Route::get('api/products/{id}',[HelpController::class, 'show'] );
-Route::get('api/products?category={id}',[HelpController3::class, 'show'] );*/
-//Route::get('api/category/{id}',[HelpController3::class, 'show'] );
-//Route::apiResources('api/cart/add',[HelpController2::class, 'store'] );
-Route::post('cart/update',[HelpController2::class,'update']);
-Route::post('cart/add',[HelpController2::class,'store']);
-Route::post('cart/submit',[HelpController2::class,'submit']);
-Route::post('cart/delete',[HelpController2::class,'destroy']);
+ * Route::get('api/products',[HelpController::class, 'index'] );
+ * Route::get('api/products/{id}',[HelpController::class, 'show'] );
+ * Route::get('api/products?category={id}',[HelpController3::class, 'show'] );
+ * Route::get('api/category/{id}',[HelpController3::class, 'show'] );
+ * Route::apiResources('api/cart/add',[HelpController2::class, 'store'] );*/
+
+
+/** Роут для парсинга сайта книжного магазина*/
+Route::get('/parse', [MainController::class, 'parse']);
+
+Route::get('/books/{id}', function () {
+    return 'ID';
+});
+
+Route::post('cart/update', [HelpController2::class, 'update']);
+Route::post('cart/add', [HelpController2::class, 'store']);
+Route::post('cart/submit', [HelpController2::class, 'submit']);
+Route::post('cart/delete', [HelpController2::class, 'destroy']);
+
 
 Route::apiResources([
-    'products'=>HelpController::class,
-    'cart'=>HelpController2::class,
+    'products' => HelpController::class,
+    'cart' => HelpController2::class,
 
 ]);

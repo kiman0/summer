@@ -11,16 +11,17 @@ use App\Models\books;
 
 
 class HelpController extends Controller
-{
+{ /** Этот контроллер содержит GETы для каталога товаров */
+
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
+
     public function index()
-    {
-      //  return books::all();
-        return HelpResource::collection(books::all());
+    {     /** Выводим все книжки, которые у нас есть (? каталог)*/
+           return HelpResource::collection(books::all());
     }
 
     /**
@@ -29,6 +30,7 @@ class HelpController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+
     public function store(Request $request)
     {
         //
@@ -40,8 +42,9 @@ class HelpController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
+
     public function show($id)
-    {
+    { /** Выводим товар-книжку по айдишнику (? карточка товара)*/
         return new HelpResource(books::findorFail($id));
     }
 
@@ -52,6 +55,7 @@ class HelpController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
+
     public function update(Request $request, $id)
     {
         //

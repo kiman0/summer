@@ -15,131 +15,124 @@ use App\Models\interm1;
 
 class HelpController2 extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    /** Этот контроллер содержит POSTы и GETы для корзины */
+    public function index(Request $request)
     {
-        return HelpResource2::collection(sessions::all());
+        /** чекаем по номеру сессии книжки в корзине - таблица help2 */
+        $titles = help2::where('sessions_id', $request->user_id)->pluck('bookss_id');
+
+        $price_full = 0;
+        $count_full = 0;
+        foreach ($titles as & $wow1) {
+            $int = (int)$wow1;
+            $price = books::where('id', $wow1)->first()->book_price;
+            /** На всякий случай переводим в число*/
+            $int = (int)$price;
+
+            $count = help2::where('sessions_id', $request->user_id)->where('bookss_id', $wow1)->first()->bookss_count;
+            /** На всякий случай переводим в число*/
+            $int = (int)$count;
+
+            /** Считаем итоговую стоимость, итоговое количество-на всякий случай*/
+            $price_full = $price_full + $price * $count;
+            $count_full = $count_full + $count;
+        }
+
+        $data = array();
+        $i = 0;
+
+        $get_books_name = help2::where('sessions_id', $request->user_id)->pluck('bookss_id');
+        foreach ($get_books_name as & $wow2) {
+            $cheks1 = books::where('id', $wow2)->first()->book_name;
+            $cheks2 = books::where('id', $wow2)->first()->book_price;
+            $cheks3 = books::where('id', $wow2)->first()->data_img;
+            $data[$i] = [
+                'name' => $cheks1,
+                'prices' => $cheks2,
+                'image' => $cheks3,
+            ];
+            $i++;
+
+        }
+
+        return [new HelpResource2(sessions::with('products')->findorFail($request->id)), $price_full, $count_full, $data];
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
-        $created_desk=sessions::create(
-            ['id' =>  $request->id,
-               'user_id' =>  $request->user_id,
-                'payload' => 10,
-                'last_activity' => 10,]
+        $create_session = sessions::create(
+            ['id' => $request->id,
+                'user_id' => $request->user_id,
+                /** Какие-то вспомогательные поля, можно поменять их заполнение */
+                'payload' => 1,
+                'last_activity' => 1,]
         );
 
-        $books = books::where('id', $request->bookss_id)->first();
+        //$books = books::where('id', $request->bookss_id)->first();
         $user_id = sessions::where('id', $request->id)->first()->user_id;
 
-      $created_desk2= help2::create([
-                    'sessions_id' => $user_id,
+        $possible_order = help2::create([
+            'sessions_id' => $user_id,
+            'bookss_id' => $request->bookss_id,
+            'bookss_count' => $request->bookss_count,
+        ]);
+
+        $titles = help2::where('sessions_id', $request->sessions_id)->pluck('bookss_id');
+        $price_full = 0;
+        $count_full = 0;
+        foreach ($titles as & $wow1) {
+            $int = (int)$wow1;
+            $price = books::where('id', $wow1)->first()->book_price;
+            $int = (int)$price;
+
+            $count = help2::where('sessions_id', $request->sessions_id)->where('bookss_id', $wow1)->first()->bookss_count;
+            $int = (int)$count;
+
+            $price_full = $price_full + $price * $count;
+            $count_full = $count_full + $count;
+        }
+        $data = array();
+        $i = 0;
+
+        $get_books_name = help2::where('sessions_id', $request->sessions_id)->pluck('bookss_id');
+        foreach ($get_books_name as & $wow2) {
+            $cheks1 = books::where('id', $wow2)->first()->book_name;
+            $cheks2 = books::where('id', $wow2)->first()->book_price;
+            $cheks3 = books::where('id', $wow2)->first()->data_img;
+            $data[$i] = [
+                'name' => $cheks1,
+                'prices' => $cheks2,
+                'image' => $cheks3,
+            ];
+            $i++;
+
+        }
+        return [new HelpResource2(sessions::with('products')->findorFail($request->id)), $price_full, $count_full, $data];
+    }
+
+
+    public function show($id)
+    {
+    }
+
+    public function update(Request $request)
+    {
+        /** Два пути, если уже есть книжка с ID в корзине, то +ее количество,
+         * А если нет, то кладем ее в корзину (создаем новую запись в help2 )*/
+        if ((help2::where('sessions_id', $request->user_id)->where('bookss_id', $request->bookss_id)->first()) != null) {
+            $user_id = help2::where('sessions_id', $request->user_id)->where('bookss_id', $request->bookss_id)->first();
+
+            if (($user_id->bookss_id) == ($request->bookss_id)) {
+                help2::where('sessions_id', $request->user_id)->where('bookss_id', $request->bookss_id)->increment('bookss_count', $request->bookss_count);
+            } else {
+                $possible_order = help2::create([
+                    'sessions_id' => $request->user_id,
                     'bookss_id' => $request->bookss_id,
                     'bookss_count' => $request->bookss_count,
                 ]);
-
-        $titles = help2::where('sessions_id', $request->sessions_id)->pluck('bookss_id');
-        $price_full=0;
-        $count_full=0;
-        foreach ($titles as & $wow1) {
-            $int = (int)$wow1;
-            $price = books::where('id', $wow1)->first()->book_price;
-            $int = (int)$price;
-            //$count = books::where('id', $wow1)->first()->book_price;
-            $count = help2::where('sessions_id', $request->sessions_id)->where('bookss_id',$wow1)->first()->bookss_count;
-            $int = (int)$count;
-            $price_full=$price_full+$price*$count;
-            $count_full=$count_full+$count;
-        }
-        $data = array();
-        $i=0;
-
-        $booksy=help2::where('sessions_id', $request->sessions_id)->pluck('bookss_id');
-        foreach ($booksy as & $wow3) {
-            $cheks1=books::where('id',$wow3)->first()->book_name;
-            $cheks2=books::where('id',$wow3)->first()->book_price;
-            $cheks3=books::where('id',$wow3)->first()->data_img;
-            $data[$i] = [
-                'name' =>$cheks1,
-                'prices' =>$cheks2,
-                'image' => $cheks3,
-            ];
-                 $i++;
-
-        }
-//return $data;
-      return [new HelpResource2(sessions::with('products')->findorFail($request->id)),$price_full ,$count_full, $data, books::find($request->bookss_id)];
-
-        /**$$created_desk2 = help2::create([
-            'bookss_id' => $request['bookss_id'],   // $request->title also works?
-            'bookss_count' => $request['bookss_count'], // $request->body also works?
-            'sessions_id' =>  sessions::where('session_id')->find('session_id'), // there might be a better solution, but this works 100%
-
-        ]);*/
-
-
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {/**
-        $titles = help2::where('sessions_id', $request->sessions_id)->pluck('bookss_id');
-        $price_full=0;
-        $count_full=0;
-        foreach ($titles as & $wow1) {
-            $int = (int)$wow1;
-            $price = books::where('id', $wow1)->first()->book_price;
-            $int = (int)$price;
-            //$count = books::where('id', $wow1)->first()->book_price;
-            $count = help2::where('sessions_id', $request->sessions_id)->where('bookss_id',$wow1)->first()->bookss_count;
-            $int = (int)$count;
-            $price_full=$price_full+$price*$count;
-            $count_full=$count_full+$count;
-        }*/
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request)
-    {
-        if ((help2::where('sessions_id', $request->user_id)->where('bookss_id', $request->bookss_id)->first()) !=null)
-        {
-            $user_id = help2::where('sessions_id', $request->user_id)->where('bookss_id', $request->bookss_id)->first();
-
-
-        if (($user_id->bookss_id) == ($request->bookss_id)) {
-            help2::where('sessions_id', $request->user_id)->where('bookss_id', $request->bookss_id)->increment('bookss_count', $request->bookss_count);
+            }
         } else {
-            $created_desk = help2::create([
-                'sessions_id' => $request->user_id,
-                'bookss_id' => $request->bookss_id,
-                'bookss_count' => $request->bookss_count,
-            ]);
-        }
-        }
-        else {
-            $created_desk = help2::create([
+            $possible_order = help2::create([
                 'sessions_id' => $request->user_id,
                 'bookss_id' => $request->bookss_id,
                 'bookss_count' => $request->bookss_count,
@@ -149,25 +142,27 @@ class HelpController2 extends Controller
         $titles = help2::where('sessions_id', $request->sessions_id)->pluck('bookss_id');
         $price_full = 0;
         $count_full = 0;
+
         foreach ($titles as & $wow1) {
             $int = (int)$wow1;
             $price = books::where('id', $wow1)->first()->book_price;
             $int = (int)$price;
-            //$count = books::where('id', $wow1)->first()->book_price;
+
             $count = help2::where('sessions_id', $request->sessions_id)->where('bookss_id', $wow1)->first()->bookss_count;
             $int = (int)$count;
+
             $price_full = $price_full + $price * $count;
             $count_full = $count_full + $count;
         }
 
-          $data = array();
+        $data = array();
         $i = 0;
 
-        $booksy = help2::where('sessions_id', $request->sessions_id)->pluck('bookss_id');
-        foreach ($booksy as & $wow3) {
-            $cheks1 = books::where('id', $wow3)->first()->book_name;
-            $cheks2 = books::where('id', $wow3)->first()->book_price;
-            $cheks3 = books::where('id', $wow3)->first()->data_img;
+        $get_books_name = help2::where('sessions_id', $request->sessions_id)->pluck('bookss_id');
+        foreach ($get_books_name as & $wow2) {
+            $cheks1 = books::where('id', $wow2)->first()->book_name;
+            $cheks2 = books::where('id', $wow2)->first()->book_price;
+            $cheks3 = books::where('id', $wow2)->first()->data_img;
             $data[$i] = [
                 'name' => $cheks1,
                 'prices' => $cheks2,
@@ -180,58 +175,55 @@ class HelpController2 extends Controller
 
     }
 
-
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy(Request $request)
     {
-        //$product = help2::where('sessions_id', $request->user_id)->where('bookss_id',$request->bookss_id)->first();
-        //help2::where('sessions_id', $request->user_id)->where('bookss_id',$request->bookss_id)->first()->delete();
-        //$product->delete();
-        help2::where('sessions_id', $request->id)->where('bookss_id',$request->bookss_id)->delete();
+        /** Удаляем товар из корзины
+         * Проверка существования товара в корзине происходит на стороне фронта,
+         * (если товара нет в корзине, то и отображаться он не будет, как и кнопка удаления заданного товара)
+         */
+        help2::where('sessions_id', $request->id)->where('bookss_id', $request->bookss_id)->delete();
+
         $titles = help2::where('sessions_id', $request->user_id)->pluck('bookss_id');
-        $price_full=0;
-        $count_full=0;
+        $price_full = 0;
+        $count_full = 0;
         foreach ($titles as & $wow1) {
             $int = (int)$wow1;
             $price = books::where('id', $wow1)->first()->book_price;
             $int = (int)$price;
-            //$count = books::where('id', $wow1)->first()->book_price;
-            $count = help2::where('sessions_id', $request->sessions_id)->where('bookss_id',$wow1)->first()->bookss_count;
+
+            $count = help2::where('sessions_id', $request->sessions_id)->where('bookss_id', $wow1)->first()->bookss_count;
             $int = (int)$count;
-            $price_full=$price_full+$price*$count;
-            $count_full=$count_full+$count;
+            $price_full = $price_full + $price * $count;
+            $count_full = $count_full + $count;
         };
 
-        return [new HelpResource2(sessions::with('products')->findorFail($request->user_id)),$price_full,$count_full];
+        return [new HelpResource2(sessions::with('products')->findorFail($request->user_id)), $price_full, $count_full];
     }
+
     public function submit(Request $request)
     {
-//количество товаров + суммарная стоимость
+        /** help2 - это корзина, при оформлении заказа, происходит запись корзины в таблицу заказов - orders
+         * И во вспомогательную таблицу interm1
+         */
+        //количество товаров + суммарная стоимость
         $titles = help2::where('sessions_id', $request->user_id)->pluck('bookss_id');
-        $price_full=0;
-        $count_full=0;
+        $price_full = 0;
+        $count_full = 0;
         foreach ($titles as & $wow1) {
             $int = (int)$wow1;
             $price = books::where('id', $wow1)->first()->book_price;
             $int = (int)$price;
-            //$count = books::where('id', $wow1)->first()->book_price;
-            $count = help2::where('sessions_id', $request->sessions_id)->where('bookss_id',$wow1)->first()->bookss_count;
+
+            $count = help2::where('sessions_id', $request->sessions_id)->where('bookss_id', $wow1)->first()->bookss_count;
             $int = (int)$count;
-            $price_full=$price_full+$price*$count;
-            $count_full=$count_full+$count;
+            $price_full = $price_full + $price * $count;
+            $count_full = $count_full + $count;
         };
 
-        $id_books= help2::where('sessions_id', $request->user_id)->pluck('bookss_id');
+        $id_books = help2::where('sessions_id', $request->user_id)->pluck('bookss_id');
         $user = help2::where('sessions_id', $request->user_id)->pluck('bookss_count');
 
-
-        $created_desk1=orders::create([
+        $created_desk1 = orders::create([
             'order_id' => $request->order_id,
             'name' => $request->name,
             'surname' => $request->surname,
@@ -240,13 +232,13 @@ class HelpController2 extends Controller
             'total_price' => $price_full,
             'email' => $request->email,
             'address' => $request->address,
-                ]);
+        ]);
 
-        $titlessss= help2::where('sessions_id', $request->user_id)->pluck('bookss_id');
+        $titlessss = help2::where('sessions_id', $request->user_id)->pluck('bookss_id');
         //$user = help2::where('sessions_id', $request->user_id)->pluck('bookss_count');
 
         foreach ($titlessss as & $wow11) {
-            $usersss = help2::where('sessions_id', $request->user_id)->where('bookss_id',$wow11)->first()->bookss_count;
+            $usersss = help2::where('sessions_id', $request->user_id)->where('bookss_id', $wow11)->first()->bookss_count;
             $created_desk2 = interm1::create
             ([
                 'ord_id' => $request->order_id,
@@ -255,6 +247,7 @@ class HelpController2 extends Controller
             ]);
         }
 
+        /** На фронте это не используется (пока что?)*/
         return [orders::all()];
     }
 }

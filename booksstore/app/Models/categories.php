@@ -8,7 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class categories extends Model
 {
     use HasFactory;
-    public $timestamps=false;
+
+    public $timestamps = false;
     Protected $primaryKey = "id";
     public function manbooks()
     {

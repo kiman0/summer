@@ -6,11 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 class CreateInterm1sTable extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
+    /** Вспомогательная таблица к Итоговым заказам (orders)   */
     public function up()
     {
         Schema::create('interm1s', function (Blueprint $table) {

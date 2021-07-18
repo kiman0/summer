@@ -6,11 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 class CreateOrdersTable extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
+    /** Таблица Итоговых заказов книжек   */
     public function up()
     {
         Schema::create('orders', function (Blueprint $table) {

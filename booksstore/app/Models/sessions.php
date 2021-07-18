@@ -8,8 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class sessions extends Model
 {
     use HasFactory;
-    protected $fillable = ['id','payload','last_activity', 'user_id'];
+
+    protected $fillable = ['id', 'payload', 'last_activity', 'user_id'];
     public $timestamps = false;
+
     public function products()
     {
         return $this->hasMany('App\Models\help2');

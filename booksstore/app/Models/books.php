@@ -8,10 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class books extends Model
 {
     use HasFactory;
-    public $timestamps=false;
-    public $categories_id=false;
+
+    public $timestamps = false;
+    public $categories_id = false;
     //protected $fillable = ['id'];
-    Protected $primaryKey = "id";
+    protected $primaryKey = "id";
+
     public function mancategories()
     {
         return $this->belongsTo('App\Models\categories');
