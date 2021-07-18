@@ -28,9 +28,9 @@ class MainController extends Controller
         /**и добавляем содержание каждой страницы в строку*/
         $out = file_get_contents($url);
 
-        /**Регулярка для поиска ссылок на книжки с главной страницы*/
+        /**Регулярка для поиска ссылок на книжки с полученной страницы*/
         preg_match_all('#<a\s+?title="[A-Za-zА-Яа-я0-9,.!+-? ]*?"\s+?href="(.+?)"#su', $out, $res);
-        var_dump($res);
+       // var_dump($res);
 
         /**Увеличиваем время обработки, чтобы ничего не упало*/
         ini_set('max_execution_time', 300);
@@ -125,7 +125,7 @@ class MainController extends Controller
                             $t1->data_img = $res6[1][0];
                             $t1->save();
                         }
-                        echo "books_saved";
+                        echo "book_saved";
                     };
                 endif;
 
