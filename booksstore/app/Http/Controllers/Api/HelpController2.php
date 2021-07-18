@@ -40,31 +40,27 @@ class HelpController2 extends Controller
 
         $books = books::where('id', $request->bookss_id)->first();
         $user_id = sessions::where('id', $request->id)->first()->user_id;
-        $price = books::where('id', $request->bookss_id)->first()->book_price;
-        $price_full=$price*($request->bookss_count);
-        $counter=0;
-       // $objectData=books::where('id', $request->bookss_id);
-       // $objectData = (array)$objectData;
-        $counter=count([help2::where('sessions_id', $request->id)]);
-        //for ($i = 1; $i <= count(help2::where('sessions_id', $request->user_id)); $i++)
-       // {
-
-        //}
-       // $price = books::where('id', $request->bookss_id)->first()->book_price;
-
-
-
-       //if (sessions::where('user_id', $request->user_id)->first() != null)
-       // {
-          //  $omg = help2::where('product_id', $request->id)->where('cart_id', $user_id)->first();
-         //  {
 
       $created_desk2= help2::create([
                     'sessions_id' => $user_id,
                     'bookss_id' => $books->id,
                     'bookss_count' => $request->bookss_count,
                 ]);
-      return [new HelpResource2(sessions::with('products')->findorFail($request->id)),$price_full ,$counter,new HelpResource(books::find($request->bookss_id))];
+
+        $titles = help2::where('sessions_id', $request->sessions_id)->pluck('bookss_id');
+        $price_full=0;
+        $count_full=0;
+        foreach ($titles as & $wow1) {
+            $int = (int)$wow1;
+            $price = books::where('id', $wow1)->first()->book_price;
+            $int = (int)$price;
+            //$count = books::where('id', $wow1)->first()->book_price;
+            $count = help2::where('sessions_id', $request->sessions_id)->where('bookss_id',$wow1)->first()->bookss_count;
+            $int = (int)$count;
+            $price_full=$price_full+$price*$count;
+            $count_full=$count_full+$count;
+        }
+      return [new HelpResource2(sessions::with('products')->findorFail($request->id)),$price_full ,$count_full,new HelpResource(books::find($request->bookss_id))];
     //return new HelpResource2($created_desk2);
 
       //  return response()->json(['error' => 'no such product'], 404);
@@ -76,6 +72,7 @@ class HelpController2 extends Controller
 
         ]);*/
 
+
     }
 
     /**
@@ -85,8 +82,20 @@ class HelpController2 extends Controller
      * @return \Illuminate\Http\Response
      */
     public function show($id)
-    {
-        return new HelpResource2(sessions::with('products')->findorFail($id));
+    {/**
+        $titles = help2::where('sessions_id', $request->sessions_id)->pluck('bookss_id');
+        $price_full=0;
+        $count_full=0;
+        foreach ($titles as & $wow1) {
+            $int = (int)$wow1;
+            $price = books::where('id', $wow1)->first()->book_price;
+            $int = (int)$price;
+            //$count = books::where('id', $wow1)->first()->book_price;
+            $count = help2::where('sessions_id', $request->sessions_id)->where('bookss_id',$wow1)->first()->bookss_count;
+            $int = (int)$count;
+            $price_full=$price_full+$price*$count;
+            $count_full=$count_full+$count;
+        }*/
     }
 
     /**
@@ -97,14 +106,49 @@ class HelpController2 extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request)
-    {   $products_to_update = help2::where('sessions_id', $request->sessions_id)->first();
-        $products_to_update->update([
-            'count' => $request->bookss_count,
-        ]);
+    {
+        $user_id = help2::where('sessions_id', $request->user_id)->first();
+
+        if ( ($user_id->bookss_id) == ($request->bookss_id))
+        {
+          help2::where('sessions_id', $request->user_id)->increment('bookss_count',$request->bookss_count);
+        }
+        else {
+            $created_desk=help2::create([
+                'sessions_id' => $request->user_id,
+                'bookss_id' => $request->bookss_id,
+                'bookss_count' => $request->bookss_count,
+            ]);
+        }
+
+        $titles = help2::where('sessions_id', $request->sessions_id)->pluck('bookss_id');
+        $price_full=0;
+        $count_full=0;
+        foreach ($titles as & $wow1) {
+            $int = (int)$wow1;
+            $price = books::where('id', $wow1)->first()->book_price;
+            $int = (int)$price;
+            //$count = books::where('id', $wow1)->first()->book_price;
+            $count = help2::where('sessions_id', $request->sessions_id)->where('bookss_id',$wow1)->first()->bookss_count;
+            $int = (int)$count;
+            $price_full=$price_full+$price*$count;
+            $count_full=$count_full+$count;
+        }
+
+/**
         $wow=help2::where('sessions_id', $request->sessions_id)->bookss_id;
-        $price = books::where('id', $wow)->first()->book_price;
-        $price_full=$price*$wow;
-        return [new HelpResource2(sessions::with('products')->findorFail($request->id)),$price_full ,new HelpResource(books::find($request->bookss_id))];
+        foreach ($wow as & $wow1) {
+           // $wow2=help2::where('sessions_id', $request->sessions_id)->first()->bookss_id;
+            $price = books::where('id', $wow1)->first()->book_price;
+            $price_full=$price*$wow1;
+        }
+*/
+
+        return [new HelpResource2(sessions::with('products')->findorFail($request->user_id)),$price_full,$count_full, new HelpResource(books::find($request->bookss_id))];
+
+
+
+
     }
 
     /**
