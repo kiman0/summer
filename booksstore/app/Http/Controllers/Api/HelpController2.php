@@ -135,15 +135,6 @@ class HelpController2 extends Controller
             $count_full=$count_full+$count;
         }
 
-/**
-        $wow=help2::where('sessions_id', $request->sessions_id)->bookss_id;
-        foreach ($wow as & $wow1) {
-           // $wow2=help2::where('sessions_id', $request->sessions_id)->first()->bookss_id;
-            $price = books::where('id', $wow1)->first()->book_price;
-            $price_full=$price*$wow1;
-        }
-*/
-
         return [new HelpResource2(sessions::with('products')->findorFail($request->user_id)),$price_full,$count_full, new HelpResource(books::find($request->bookss_id))];
 
 
