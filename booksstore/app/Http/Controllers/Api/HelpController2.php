@@ -107,11 +107,11 @@ class HelpController2 extends Controller
      */
     public function update(Request $request)
     {
-        $user_id = help2::where('sessions_id', $request->user_id)->first();
+        $user_id = help2::where('sessions_id', $request->user_id)->where('bookss_id',$request->bookss_id)->first();
 
         if ( ($user_id->bookss_id) == ($request->bookss_id))
         {
-          help2::where('sessions_id', $request->user_id)->increment('bookss_count',$request->bookss_count);
+          help2::where('sessions_id', $request->user_id)->where('bookss_id',$request->bookss_id)->increment('bookss_count',$request->bookss_count);
         }
         else {
             $created_desk=help2::create([
@@ -148,8 +148,22 @@ class HelpController2 extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
-        //
+        $user_id = help2::where('sessions_id', $request->user_id)->first();
+        if ( ($user_id->bookss_id) == ($request->bookss_id))
+        {
+            $product_in_list = books::where('id', $request->bookss_id)->where('cart_id', $user_id)->first();
+            if ($product_in_list != null)
+            {
+                $product_in_list->delete();
+                return response(null, Response::HTTP_NO_CONTENT);
+            }
+            else {
+                return response(null, Response::HTTP_BAD_REQUEST);
+            }
+        }
+        return response()->json(['error' => 'no such product'], 400);
     }
+
 }

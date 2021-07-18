@@ -27,12 +27,11 @@ Route::get('api/products?category={id}',[HelpController3::class, 'show'] );*/
 //Route::apiResources('api/cart/add',[HelpController2::class, 'store'] );
 Route::post('cart/update',[HelpController2::class,'update']);
 Route::post('cart/add',[HelpController2::class,'store']);
+Route::post('cart/submit',[HelpController2::class,'destroy']);
+Route::post('cart/delete',[HelpController2::class,'del']);
+
 Route::apiResources([
     'products'=>HelpController::class,
     'cart'=>HelpController2::class,
-   // 'cart/add'=>HelpController2::class,
-  //  'cart/update'=>HelpController2::class,
 
-    //'cart/add'=>HelpController2::class,
-   // 'category'=>HelpController3::class,
 ]);
