@@ -33,7 +33,7 @@ class HelpController2 extends Controller
             /** На всякий случай переводим в число*/
             $int = (int)$count;
 
-            /** Считаем итоговую стоимость, итоговое количество-на всякий случай*/
+            /** Считаем итоговую стоимость,итоговое количество-на всякий случай*/
             $price_full = $price_full + $price * $count;
             $count_full = $count_full + $count;
         }
@@ -246,6 +246,9 @@ class HelpController2 extends Controller
          * И во вспомогательную таблицу interm1
          */
         //количество товаров + суммарная стоимость
+        //создаем номер заказа
+        $ordernumber_id = orders::max('order_id')+1;
+
         $titles = help2::where('sessions_id', $request->id)->pluck('bookss_id');
         $price_full = 0;
         $count_full = 0;
@@ -264,7 +267,7 @@ class HelpController2 extends Controller
         $user = help2::where('sessions_id', $request->id)->pluck('bookss_count');
 
         $created_desk1 = orders::create([
-            'order_id' => $request->order_id,
+            'order_id' => $ordernumber_id,
             'name' => $request->name,
             'surname' => $request->surname,
             'patronymic' => $request->patronymic,
@@ -281,7 +284,7 @@ class HelpController2 extends Controller
             $usersss = help2::where('sessions_id', $request->id)->where('bookss_id', $wow11)->first()->bookss_count;
             $created_desk2 = interm1::create
             ([
-                'ord_id' => $request->order_id,
+                'ord_id' =>$ordernumber_id,
                 'boo_id' => $wow11,
                 'quantity' => $usersss,
             ]);
