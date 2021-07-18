@@ -16,6 +16,7 @@ class HelpResource2 extends JsonResource
     { return [
                      'user_id'=>$this->user_id,
                      'products'=>CartResource::collection($this->products),
+
         ];
     }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\HelpResource2;
+use App\Http\Resources\HelpResource;
 use Illuminate\Http\Request;
 use App\Models\sessions;
 use App\Models\help2;
@@ -51,7 +52,7 @@ class HelpController2 extends Controller
                     'bookss_id' => $books->id,
                     'bookss_count' => 1,
                 ]);
-      return new HelpResource2(sessions::with('products')->findorFail($request->id));
+      return [new HelpResource2(sessions::with('products')->findorFail($request->id)), new HelpResource(books::find($request->bookss_id))];
     //return new HelpResource2($created_desk2);
 
       //  return response()->json(['error' => 'no such product'], 404);
