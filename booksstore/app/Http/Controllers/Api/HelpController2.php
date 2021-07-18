@@ -40,6 +40,9 @@ class HelpController2 extends Controller
 
         $books = books::where('id', $request->bookss_id)->first();
         $user_id = sessions::where('id', $request->id)->first()->user_id;
+        $price = books::where('id', $request->bookss_id)->first()->book_price;
+        $price_full=$price*($request->bookss_count);
+
 
 
        //if (sessions::where('user_id', $request->user_id)->first() != null)
@@ -50,9 +53,9 @@ class HelpController2 extends Controller
       $created_desk2= help2::create([
                     'sessions_id' => $user_id,
                     'bookss_id' => $books->id,
-                    'bookss_count' => 1,
+                    'bookss_count' => $request->bookss_count,
                 ]);
-      return [new HelpResource2(sessions::with('products')->findorFail($request->id)), new HelpResource(books::find($request->bookss_id))];
+      return [new HelpResource2(sessions::with('products')->findorFail($request->id)),$price_full ,new HelpResource(books::find($request->bookss_id))];
     //return new HelpResource2($created_desk2);
 
       //  return response()->json(['error' => 'no such product'], 404);
