@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use App\Models\sessions;
 use App\Models\help2;
 use App\Models\books;
+use App\Models\orders;
+use App\Models\interm1;
 
 
 class HelpController2 extends Controller
@@ -181,5 +183,51 @@ class HelpController2 extends Controller
 
         return [new HelpResource2(sessions::with('products')->findorFail($request->user_id)),$price_full,$count_full];
     }
+    public function submit(Request $request)
+    {
+//количество товаров + суммарная стоимость
+        $titles = help2::where('sessions_id', $request->user_id)->pluck('bookss_id');
+        $price_full=0;
+        $count_full=0;
+        foreach ($titles as & $wow1) {
+            $int = (int)$wow1;
+            $price = books::where('id', $wow1)->first()->book_price;
+            $int = (int)$price;
+            //$count = books::where('id', $wow1)->first()->book_price;
+            $count = help2::where('sessions_id', $request->sessions_id)->where('bookss_id',$wow1)->first()->bookss_count;
+            $int = (int)$count;
+            $price_full=$price_full+$price*$count;
+            $count_full=$count_full+$count;
+        };
 
+        $id_books= help2::where('sessions_id', $request->user_id)->pluck('bookss_id');
+        $user = help2::where('sessions_id', $request->user_id)->pluck('bookss_count');
+
+
+        $created_desk1=orders::create([
+            'order_id' => $request->order_id,
+            'name' => $request->name,
+            'surname' => $request->surname,
+            'patronymic' => $request->patronymic,
+            'telephone' => $request->telephone,
+            'total_price' => $price_full,
+            'email' => $request->email,
+            'address' => $request->address,
+                ]);
+
+        $titlessss= help2::where('sessions_id', $request->user_id)->pluck('bookss_id');
+        //$user = help2::where('sessions_id', $request->user_id)->pluck('bookss_count');
+
+        foreach ($titlessss as & $wow11) {
+            $usersss = help2::where('sessions_id', $request->user_id)->where('bookss_id',$wow11)->first()->bookss_count;
+            $created_desk2 = interm1::create
+            ([
+                'ord_id' => $request->order_id,
+                'boo_id' => $wow11,
+                'quantity' => $usersss,
+            ]);
+        }
+
+        return [orders::all()];
+    }
 }
