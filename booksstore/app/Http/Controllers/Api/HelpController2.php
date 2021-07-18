@@ -42,6 +42,15 @@ class HelpController2 extends Controller
         $user_id = sessions::where('id', $request->id)->first()->user_id;
         $price = books::where('id', $request->bookss_id)->first()->book_price;
         $price_full=$price*($request->bookss_count);
+        $counter=0;
+       // $objectData=books::where('id', $request->bookss_id);
+       // $objectData = (array)$objectData;
+        $counter=count([help2::where('sessions_id', $request->id)]);
+        //for ($i = 1; $i <= count(help2::where('sessions_id', $request->user_id)); $i++)
+       // {
+
+        //}
+       // $price = books::where('id', $request->bookss_id)->first()->book_price;
 
 
 
@@ -55,7 +64,7 @@ class HelpController2 extends Controller
                     'bookss_id' => $books->id,
                     'bookss_count' => $request->bookss_count,
                 ]);
-      return [new HelpResource2(sessions::with('products')->findorFail($request->id)),$price_full ,new HelpResource(books::find($request->bookss_id))];
+      return [new HelpResource2(sessions::with('products')->findorFail($request->id)),$price_full ,$counter,new HelpResource(books::find($request->bookss_id))];
     //return new HelpResource2($created_desk2);
 
       //  return response()->json(['error' => 'no such product'], 404);
@@ -87,9 +96,15 @@ class HelpController2 extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
-    {
-        //
+    public function update(Request $request)
+    {   $products_to_update = help2::where('sessions_id', $request->sessions_id)->first();
+        $products_to_update->update([
+            'count' => $request->bookss_count,
+        ]);
+        $wow=help2::where('sessions_id', $request->sessions_id)->bookss_id;
+        $price = books::where('id', $wow)->first()->book_price;
+        $price_full=$price*$wow;
+        return [new HelpResource2(sessions::with('products')->findorFail($request->id)),$price_full ,new HelpResource(books::find($request->bookss_id))];
     }
 
     /**

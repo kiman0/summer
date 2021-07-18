@@ -24,10 +24,12 @@ Route::get('api/products',[HelpController::class, 'index'] );
 Route::get('api/products/{id}',[HelpController::class, 'show'] );
 Route::get('api/products?category={id}',[HelpController3::class, 'show'] );*/
 //Route::get('api/category/{id}',[HelpController3::class, 'show'] );
-
+//Route::apiResources('api/cart/add',[HelpController2::class, 'store'] );
 Route::apiResources([
     'products'=>HelpController::class,
     'cart'=>HelpController2::class,
     'cart/add'=>HelpController2::class,
+    'cart/update'=>HelpController2::class,
+    //'cart/add'=>HelpController2::class,
    // 'category'=>HelpController3::class,
 ]);
