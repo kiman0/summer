@@ -246,7 +246,7 @@ class HelpController2 extends Controller
          * И во вспомогательную таблицу interm1
          */
         //количество товаров + суммарная стоимость
-        //создаем номер заказа
+        //создаем номер заказаа
         $ordernumber_id = orders::max('order_id')+1;
 
         $titles = help2::where('sessions_id', $request->id)->pluck('bookss_id');
