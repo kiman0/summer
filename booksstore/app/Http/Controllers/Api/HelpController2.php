@@ -64,7 +64,7 @@ class HelpController2 extends Controller
     {
         $create_session = sessions::create(
             ['id' => $request->id,
-                'user_id' => $request->user_id,
+                'user_id' => $request->id,
                 /** Какие-то вспомогательные поля, можно поменять их заполнение */
                 'payload' => 1,
                 'last_activity' => 1,]
@@ -79,7 +79,7 @@ class HelpController2 extends Controller
             'bookss_count' => $request->bookss_count,
         ]);
 
-        $titles = help2::where('sessions_id', $request->sessions_id)->pluck('bookss_id');
+        $titles = help2::where('sessions_id', $request->id)->pluck('bookss_id');
         $price_full = 0;
         $count_full = 0;
         foreach ($titles as & $wow1) {
@@ -87,7 +87,7 @@ class HelpController2 extends Controller
             $price = books::where('id', $wow1)->first()->book_price;
             $int = (int)$price;
 
-            $count = help2::where('sessions_id', $request->sessions_id)->where('bookss_id', $wow1)->first()->bookss_count;
+            $count = help2::where('sessions_id', $request->id)->where('bookss_id', $wow1)->first()->bookss_count;
             $int = (int)$count;
 
             $price_full = $price_full + $price * $count;
@@ -96,7 +96,7 @@ class HelpController2 extends Controller
         $data = array();
         $i = 0;
 
-        $get_books_name = help2::where('sessions_id', $request->sessions_id)->pluck('bookss_id');
+        $get_books_name = help2::where('sessions_id', $request->id)->pluck('bookss_id');
         foreach ($get_books_name as & $wow2) {
             $cheks1 = books::where('id', $wow2)->first()->book_name;
             $cheks2 = books::where('id', $wow2)->first()->book_price;
@@ -159,27 +159,27 @@ class HelpController2 extends Controller
     {
         /** Два пути, если уже есть книжка с ID в корзине, то +ее количество,
          * А если нет, то кладем ее в корзину (создаем новую запись в help2 )*/
-        if ((help2::where('sessions_id', $request->user_id)->where('bookss_id', $request->bookss_id)->first()) != null) {
-            $user_id = help2::where('sessions_id', $request->user_id)->where('bookss_id', $request->bookss_id)->first();
+        if ((help2::where('sessions_id', $request->id)->where('bookss_id', $request->bookss_id)->first()) != null) {
+            $user_id = help2::where('sessions_id', $request->id)->where('bookss_id', $request->bookss_id)->first();
 
             if (($user_id->bookss_id) == ($request->bookss_id)) {
-                help2::where('sessions_id', $request->user_id)->where('bookss_id', $request->bookss_id)->increment('bookss_count', $request->bookss_count);
+                help2::where('sessions_id', $request->id)->where('bookss_id', $request->bookss_id)->increment('bookss_count', $request->bookss_count);
             } else {
                 $possible_order = help2::create([
-                    'sessions_id' => $request->user_id,
+                    'sessions_id' => $request->id,
                     'bookss_id' => $request->bookss_id,
                     'bookss_count' => $request->bookss_count,
                 ]);
             }
         } else {
             $possible_order = help2::create([
-                'sessions_id' => $request->user_id,
+                'sessions_id' => $request->id,
                 'bookss_id' => $request->bookss_id,
                 'bookss_count' => $request->bookss_count,
             ]);
         };
 
-        $titles = help2::where('sessions_id', $request->sessions_id)->pluck('bookss_id');
+        $titles = help2::where('sessions_id', $request->id)->pluck('bookss_id');
         $price_full = 0;
         $count_full = 0;
 
@@ -188,7 +188,7 @@ class HelpController2 extends Controller
             $price = books::where('id', $wow1)->first()->book_price;
             $int = (int)$price;
 
-            $count = help2::where('sessions_id', $request->sessions_id)->where('bookss_id', $wow1)->first()->bookss_count;
+            $count = help2::where('sessions_id', $request->id)->where('bookss_id', $wow1)->first()->bookss_count;
             $int = (int)$count;
 
             $price_full = $price_full + $price * $count;
@@ -198,7 +198,7 @@ class HelpController2 extends Controller
         $data = array();
         $i = 0;
 
-        $get_books_name = help2::where('sessions_id', $request->sessions_id)->pluck('bookss_id');
+        $get_books_name = help2::where('sessions_id', $request->id)->pluck('bookss_id');
         foreach ($get_books_name as & $wow2) {
             $cheks1 = books::where('id', $wow2)->first()->book_name;
             $cheks2 = books::where('id', $wow2)->first()->book_price;
@@ -223,7 +223,7 @@ class HelpController2 extends Controller
          */
         help2::where('sessions_id', $request->id)->where('bookss_id', $request->bookss_id)->delete();
 
-        $titles = help2::where('sessions_id', $request->user_id)->pluck('bookss_id');
+        $titles = help2::where('sessions_id', $request->id)->pluck('bookss_id');
         $price_full = 0;
         $count_full = 0;
         foreach ($titles as & $wow1) {
@@ -231,13 +231,13 @@ class HelpController2 extends Controller
             $price = books::where('id', $wow1)->first()->book_price;
             $int = (int)$price;
 
-            $count = help2::where('sessions_id', $request->sessions_id)->where('bookss_id', $wow1)->first()->bookss_count;
+            $count = help2::where('sessions_id', $request->id)->where('bookss_id', $wow1)->first()->bookss_count;
             $int = (int)$count;
             $price_full = $price_full + $price * $count;
             $count_full = $count_full + $count;
         };
 
-        return [new HelpResource2(sessions::with('products')->findorFail($request->user_id)), $price_full, $count_full];
+        return [new HelpResource2(sessions::with('products')->findorFail($request->id)), $price_full, $count_full];
     }
 
     public function submit(Request $request)
@@ -246,7 +246,7 @@ class HelpController2 extends Controller
          * И во вспомогательную таблицу interm1
          */
         //количество товаров + суммарная стоимость
-        $titles = help2::where('sessions_id', $request->user_id)->pluck('bookss_id');
+        $titles = help2::where('sessions_id', $request->id)->pluck('bookss_id');
         $price_full = 0;
         $count_full = 0;
         foreach ($titles as & $wow1) {
@@ -254,14 +254,14 @@ class HelpController2 extends Controller
             $price = books::where('id', $wow1)->first()->book_price;
             $int = (int)$price;
 
-            $count = help2::where('sessions_id', $request->sessions_id)->where('bookss_id', $wow1)->first()->bookss_count;
+            $count = help2::where('sessions_id', $request->id)->where('bookss_id', $wow1)->first()->bookss_count;
             $int = (int)$count;
             $price_full = $price_full + $price * $count;
             $count_full = $count_full + $count;
         };
 
-        $id_books = help2::where('sessions_id', $request->user_id)->pluck('bookss_id');
-        $user = help2::where('sessions_id', $request->user_id)->pluck('bookss_count');
+        $id_books = help2::where('sessions_id', $request->id)->pluck('bookss_id');
+        $user = help2::where('sessions_id', $request->id)->pluck('bookss_count');
 
         $created_desk1 = orders::create([
             'order_id' => $request->order_id,
@@ -274,11 +274,11 @@ class HelpController2 extends Controller
             'address' => $request->address,
         ]);
 
-        $titlessss = help2::where('sessions_id', $request->user_id)->pluck('bookss_id');
+        $titlessss = help2::where('sessions_id', $request->id)->pluck('bookss_id');
         //$user = help2::where('sessions_id', $request->user_id)->pluck('bookss_count');
 
         foreach ($titlessss as & $wow11) {
-            $usersss = help2::where('sessions_id', $request->user_id)->where('bookss_id', $wow11)->first()->bookss_count;
+            $usersss = help2::where('sessions_id', $request->id)->where('bookss_id', $wow11)->first()->bookss_count;
             $created_desk2 = interm1::create
             ([
                 'ord_id' => $request->order_id,
