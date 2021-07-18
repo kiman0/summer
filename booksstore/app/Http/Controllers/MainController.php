@@ -21,33 +21,7 @@ class MainController extends Controller
 
     public function parse()
 
-    {   /**
-        $Temp2 = new categories();
-        $Temp2->id = '1';
-        $Temp2->category_name = 'Чтож';
-        $Temp2->save();
-
-        $Temp = new books();
-        $Temp->id = '12';
-        $Temp->book_name = 'Помогите мне';
-        $Temp->book_author = 'Хочу плакать';
-        $Temp->book_price = '150';
-        $Temp->category = 'Чтож';
-        $Temp2->manbooks()->save($Temp);*/
-
-        /**
-        $user = new books();
-        $user->id = '1';
-        $user->book_name = 'Помогите мне';
-        $user->book_author = 'Хочу плакать';
-        $user->book_price = '150';
-        //$user->category_name = Input::get('password');
-
-        $user->category = new categories();
-        $user->category->category_name = 'omg';
-
-        $user->push();*/
-
+    {
         /**Подключаемся к сайту для парсинга*/
         $url = 'https://book24.ru/knigi-bestsellery/';
 
@@ -118,10 +92,6 @@ class MainController extends Controller
                         //echo $comma_separated3;
                     };
                 endif;
-
-                /**echo ($res5[1][0]);
-                //echo $res3[1][0];
-                //echo $res4[2][0];*/
 
                 $counter=$col+1;
                 echo $counter;

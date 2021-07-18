@@ -27,8 +27,8 @@ Route::get('api/products?category={id}',[HelpController3::class, 'show'] );*/
 //Route::apiResources('api/cart/add',[HelpController2::class, 'store'] );
 Route::post('cart/update',[HelpController2::class,'update']);
 Route::post('cart/add',[HelpController2::class,'store']);
-Route::post('cart/submit',[HelpController2::class,'destroy']);
-Route::post('cart/delete',[HelpController2::class,'del']);
+//Route::post('cart/submit',[HelpController2::class,'destroy']);
+Route::post('cart/delete',[HelpController2::class,'destroy']);
 
 Route::apiResources([
     'products'=>HelpController::class,

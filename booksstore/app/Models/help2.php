@@ -14,4 +14,5 @@ class help2 extends Model
     {
         return $this->belongsTo('App\Models\sessions');
     }
+
 }

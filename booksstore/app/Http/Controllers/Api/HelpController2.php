@@ -43,7 +43,7 @@ class HelpController2 extends Controller
 
       $created_desk2= help2::create([
                     'sessions_id' => $user_id,
-                    'bookss_id' => $books->id,
+                    'bookss_id' => $request->bookss_id,
                     'bookss_count' => $request->bookss_count,
                 ]);
 
@@ -60,7 +60,7 @@ class HelpController2 extends Controller
             $price_full=$price_full+$price*$count;
             $count_full=$count_full+$count;
         }
-      return [new HelpResource2(sessions::with('products')->findorFail($request->id)),$price_full ,$count_full,new HelpResource(books::find($request->bookss_id))];
+      return [new HelpResource2(sessions::with('products')->findorFail($request->id)),$price_full ,$count_full, books::find($request->bookss_id)];
     //return new HelpResource2($created_desk2);
 
       //  return response()->json(['error' => 'no such product'], 404);
@@ -109,6 +109,8 @@ class HelpController2 extends Controller
     {
         $user_id = help2::where('sessions_id', $request->user_id)->where('bookss_id',$request->bookss_id)->first();
 
+       // $helppppp =books::with('help_rel')->findorFail($request);
+
         if ( ($user_id->bookss_id) == ($request->bookss_id))
         {
           help2::where('sessions_id', $request->user_id)->where('bookss_id',$request->bookss_id)->increment('bookss_count',$request->bookss_count);
@@ -135,12 +137,21 @@ class HelpController2 extends Controller
             $count_full=$count_full+$count;
         }
 
-        return [new HelpResource2(sessions::with('products')->findorFail($request->user_id)),$price_full,$count_full, new HelpResource(books::find($request->bookss_id))];
+        //$posts = help2::with('help_rel')->get();
+        //$userssss = help2::where('sessions_id',$request->sessions_id)->pluck('bookss_id');
+        //return help2::with('man_books')->get();
+        //foreach ($userssss as & $wow2) {
+         ////   $hell=new HelpResource(books::where('id', $wow2));
+
+
+        //$count_full= help2::where('sessions_id', $request->sessions_id)->where(bookss::where())
+
+      return [new HelpResource2(sessions::with('products')->findorFail($request->user_id)),$price_full,$count_full];}
+   //  new HelpResource(books::where()->findorFail($request->bookss_id))];
+      //  books::find($request->bookss_id)
 
 
 
-
-    }
 
     /**
      * Remove the specified resource from storage.
@@ -150,20 +161,25 @@ class HelpController2 extends Controller
      */
     public function destroy(Request $request)
     {
-        $user_id = help2::where('sessions_id', $request->user_id)->first();
-        if ( ($user_id->bookss_id) == ($request->bookss_id))
-        {
-            $product_in_list = books::where('id', $request->bookss_id)->where('cart_id', $user_id)->first();
-            if ($product_in_list != null)
-            {
-                $product_in_list->delete();
-                return response(null, Response::HTTP_NO_CONTENT);
-            }
-            else {
-                return response(null, Response::HTTP_BAD_REQUEST);
-            }
-        }
-        return response()->json(['error' => 'no such product'], 400);
+        //$product = help2::where('sessions_id', $request->user_id)->where('bookss_id',$request->bookss_id)->first();
+        //help2::where('sessions_id', $request->user_id)->where('bookss_id',$request->bookss_id)->first()->delete();
+        //$product->delete();
+        help2::where('sessions_id', $request->id)->where('bookss_id',$request->bookss_id)->delete();
+        $titles = help2::where('sessions_id', $request->user_id)->pluck('bookss_id');
+        $price_full=0;
+        $count_full=0;
+        foreach ($titles as & $wow1) {
+            $int = (int)$wow1;
+            $price = books::where('id', $wow1)->first()->book_price;
+            $int = (int)$price;
+            //$count = books::where('id', $wow1)->first()->book_price;
+            $count = help2::where('sessions_id', $request->sessions_id)->where('bookss_id',$wow1)->first()->bookss_count;
+            $int = (int)$count;
+            $price_full=$price_full+$price*$count;
+            $count_full=$count_full+$count;
+        };
+
+        return [new HelpResource2(sessions::with('products')->findorFail($request->user_id)),$price_full,$count_full];
     }
 
 }
